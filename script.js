@@ -12,36 +12,40 @@ function setup() {
 }
 
 function draw() {
-    background(100); // Fondo blanco
-
-    // Mostrar todas las cargas
-    for (let i = 0; i < cargas.length; i++) {
-        cargas[i].mostrar(); // Dibujar cada carga en el canvas
-    }
-
-    // Mostrar el punto de referencia
-    fill(0);
-    ellipse(punto.x, punto.y, 10, 10); // Dibujar el punto de referencia
-
-    // Calcular la sumatoria de todos los campos eléctricos en el punto de referencia
-    let campoTotal = createVector(0, 0); // El campo total empieza en (0,0)
-    for (let i = 0; i < cargas.length; i++) {
-        let E = cargas[i].campoElectricoEn(punto); // Campo eléctrico de la carga 'i' en el punto
-        campoTotal.add(E); // Sumar el campo al campo total
-    }
-
-    // Dibujar el vector resultante del campo eléctrico total
-    dibujarVectorCampoElectrico(punto, campoTotal);
-
-    // Control de arrastre del punto
-    if (arrastrandoPunto) {
-        punto.set(mouseX, mouseY); // Actualizar la posición del punto de referencia
-    }
-
-    // Control de arrastre de las cargas
-    if (arrastrandoIndiceCarga > -1) {
-        cargas[arrastrandoIndiceCarga].pos.set(mouseX, mouseY); // Mover la carga arrastrada
-    }
+       background(255); // Fondo blanco
+        
+        // Dibujar la cuadrícula con un espaciado de 50 píxeles (puedes ajustar esto)
+        dibujarCuadricula(50);
+    
+        // Mostrar todas las cargas
+        for (let i = 0; i < cargas.length; i++) {
+            cargas[i].mostrar(); // Dibujar cada carga en el canvas
+        }
+    
+        // Mostrar el punto de referencia
+        fill(0);
+        ellipse(punto.x, punto.y, 10, 10); // Dibujar el punto de referencia
+    
+        // Calcular la sumatoria de todos los campos eléctricos en el punto de referencia
+        let campoTotal = createVector(0, 0); // El campo total empieza en (0,0)
+        for (let i = 0; i < cargas.length; i++) {
+            let E = cargas[i].campoElectricoEn(punto); // Campo eléctrico de la carga 'i' en el punto
+            campoTotal.add(E); // Sumar el campo al campo total
+        }
+    
+        // Dibujar el vector resultante del campo eléctrico total
+        dibujarVectorCampoElectrico(punto, campoTotal);
+    
+        // Control de arrastre del punto
+        if (arrastrandoPunto) {
+            punto.set(mouseX, mouseY); // Actualizar la posición del punto de referencia
+        }
+    
+        // Control de arrastre de las cargas
+        if (arrastrandoIndiceCarga > -1) {
+            cargas[arrastrandoIndiceCarga].pos.set(mouseX, mouseY); // Mover la carga arrastrada
+        }
+    
 }
 
 // Detectar cuando se presiona el mouse sobre una carga o el punto de referencia
@@ -104,7 +108,7 @@ class Carga {
 
 // Función para dibujar el vector del campo eléctrico
 function dibujarVectorCampoElectrico(punto, E) {
-    let escala = 1e-3; // Escalar el campo para hacerlo visible
+    let escala = 1e-7; // Escalar el campo para hacerlo visible
     stroke(0);
     line(punto.x, punto.y, punto.x + E.x * escala, punto.y + E.y * escala); // Dibujar la línea del vector
     fill(0);
@@ -122,12 +126,28 @@ function dibujarFlecha(base, vec, tamanoFlecha) {
     translate(vec.x, vec.y);
     let angulo = atan2(vec.y - base.y, vec.x - base.x);
     rotate(angulo);
-    line(0, 0, -tamanoFlecha, -tamanoFlecha );
-    line(0, 0, -tamanoFlecha, tamanoFlecha );
+    line(0, 0, -tamanoFlecha, -tamanoFlecha / 2);
+    line(0, 0, -tamanoFlecha, tamanoFlecha / 2);
     pop();
 }
 
 // Ajustar el tamaño del canvas cuando se redimensiona la ventana
 function windowResized() {
     resizeCanvas(windowWidth, windowHeight);
+}
+
+
+function dibujarCuadricula(espaciado) {
+    stroke(200); // Color de las líneas de la cuadrícula (gris claro)
+    strokeWeight(1); // Grosor de las líneas
+    
+    // Dibujar las líneas verticales
+    for (let x = 0; x < width; x += espaciado) {
+        line(x, 0, x, height);
+    }
+
+    // Dibujar las líneas horizontales
+    for (let y = 0; y < height; y += espaciado) {
+        line(0, y, width, y);
+    }
 }
