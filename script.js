@@ -3,6 +3,7 @@ let punto; // Punto donde se calculará el campo eléctrico total
 let arrastrandoPunto = false; // Controla si se está arrastrando el punto
 let arrastrandoIndiceCarga = -1; // Controla qué carga se está arrastrando
 
+
 // Constante de Coulomb
 const k = 8.99e9; // N·m²/C²
 
@@ -22,6 +23,7 @@ function draw() {
             let distancia = dist(cargas[i].pos.x, cargas[i].pos.y, punto.x, punto.y);
            fill(0);
             text(`Distancia: ${nf(distancia, 0, 2)} m`, cargas[i].pos.x + 15, cargas[i].pos.y + 15);
+            //muestra la distania  de la cargas con el sensor   
             cargas[i].mostrar(); // Dibujar cada carga en el canvas
             
         }
@@ -33,8 +35,12 @@ function draw() {
         // Calcular la sumatoria de todos los campos eléctricos en el punto de referencia
         let campoTotal = createVector(0, 0); // El campo total empieza en (0,0)
         for (let i = 0; i < cargas.length; i++) {
+            
             let E = cargas[i].campoElectricoEn(punto); // Campo eléctrico de la carga 'i' en el punto
             campoTotal.add(E); // Sumar el campo al campo total
+
+            
+             //dibujarVectorCampoElectrico(cargas[i].pos, E);//dibujar vector en la carga
         }
     
         // Dibujar el vector resultante del campo eléctrico total
@@ -112,6 +118,7 @@ class Carga {
 
 // Función para dibujar el vector del campo eléctrico
 function dibujarVectorCampoElectrico(punto, E) {
+
     let escala = 1e-7; // Escalar el campo para hacerlo visible
     stroke(0);
     line(punto.x, punto.y, punto.x + E.x * escala, punto.y + E.y * escala); // Dibujar la línea del vector
@@ -120,6 +127,7 @@ function dibujarVectorCampoElectrico(punto, E) {
 
     // Dibujar la flecha al final del vector
     dibujarFlecha(punto, createVector(punto.x + E.x * escala, punto.y + E.y * escala), 10);
+    text(`Ángulo: ${degrees(E.heading()).toFixed(2)}°`, punto.x + 10, punto.y + 20);
 }
 
 // Función para dibujar una flecha en la punta del vector
@@ -154,4 +162,15 @@ function dibujarCuadricula(espaciado) {
     for (let y = 0; y < height; y += espaciado) {
         line(0, y, width, y);
     }
+}
+
+function guardarConfiguracion() {
+    let configuracion = cargas.map(carga => ({ x: carga.pos.x, y: carga.pos.y, q: carga.q }));
+    saveJSON(configuracion, 'configuracion_cargas.json');
+}
+
+function cargarConfiguracion() {
+    loadJSON('configuracion_cargas.json', (configuracion) => {
+        cargas = configuracion.map(cargaData => new Carga(cargaData.x, cargaData.y, cargaData.q));
+    });
 }
