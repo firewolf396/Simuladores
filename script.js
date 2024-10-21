@@ -19,7 +19,11 @@ function draw() {
     
         // Mostrar todas las cargas
         for (let i = 0; i < cargas.length; i++) {
+            let distancia = dist(cargas[i].pos.x, cargas[i].pos.y, punto.x, punto.y);
+           fill(0);
+            text(`Distancia: ${nf(distancia, 0, 2)} m`, cargas[i].pos.x + 15, cargas[i].pos.y + 15);
             cargas[i].mostrar(); // Dibujar cada carga en el canvas
+            
         }
     
         // Mostrar el punto de referencia
